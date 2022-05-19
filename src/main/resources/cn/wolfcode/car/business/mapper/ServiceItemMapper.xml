@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.car.business.mapper.ServiceItemMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.car.business.domain.ServiceItem">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="original_price" property="originalPrice" jdbcType="DECIMAL"/>
+        <result column="discount_price" property="discountPrice" jdbcType="DECIMAL"/>
+        <result column="car_package" property="carPackage" jdbcType="BIT"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="service_catalog" property="serviceCatalog" jdbcType="INTEGER"/>
+        <result column="audit_status" property="auditStatus" jdbcType="INTEGER"/>
+        <result column="sale_status" property="saleStatus" jdbcType="INTEGER"/>
+        <result column="version" property="version" jdbcType="BIGINT"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from bus_service_item
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.car.business.domain.ServiceItem" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into bus_service_item (name, original_price, discount_price,
+                                      car_package, info, create_time,
+                                      service_catalog, audit_status, sale_status,
+                                      version)
+        values (#{name,jdbcType=VARCHAR}, #{originalPrice,jdbcType=DECIMAL}, #{discountPrice,jdbcType=DECIMAL},
+                #{carPackage,jdbcType=BIT}, #{info,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+                #{serviceCatalog,jdbcType=INTEGER}, #{auditStatus,jdbcType=INTEGER}, #{saleStatus,jdbcType=INTEGER},
+                #{version,jdbcType=BIGINT})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.car.business.domain.ServiceItem">
+        update bus_service_item
+        <set>
+            <if test="name != null and name !=''">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="originalPrice != null">
+                original_price = #{originalPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="discountPrice != null">
+                discount_price = #{discountPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="carPackage != null">
+                car_package = #{carPackage,jdbcType=BIT},
+            </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="serviceCatalog != null">
+                service_catalog = #{serviceCatalog,jdbcType=INTEGER},
+            </if>
+            <if test="auditStatus != null">
+                audit_status = #{auditStatus,jdbcType=INTEGER},
+            </if>
+            <if test="saleStatus != null">
+                sale_status = #{saleStatus,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select id,
+               name,
+               original_price,
+               discount_price,
+               car_package,
+               info,
+               create_time,
+               service_catalog,
+               audit_status,
+               sale_status,
+               version
+        from bus_service_item
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id,
+               name,
+               original_price,
+               discount_price,
+               car_package,
+               info,
+               create_time,
+               service_catalog,
+               audit_status,
+               sale_status,
+               version
+        from bus_service_item
+    </select>
+
+    <select id="selectForList" resultMap="BaseResultMap">
+        select id,
+               name,
+               original_price,
+               discount_price,
+               car_package,
+               info,
+               create_time,
+               service_catalog,
+               audit_status,
+               sale_status,
+               version
+        from bus_service_item
+        <where>
+            <if test="serveName != null and serveName != ''">
+                and name like concat('%',#{serveName},'%')
+            </if>
+            <if test="serveClassify != null">
+                and service_catalog = #{serveClassify}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateByCarPackage">
+        update bus_service_item set sale_status = #{carPackage}
+        where id=#{id}
+    </update>
+
+    <update id="updateByAuditStatus">
+        update bus_service_item set audit_status = #{auditStatus}
+        where id=#{id}
+    </update>
+
+    <select id="selectAllSaleOnList" resultMap="BaseResultMap">
+        select id,
+               name,
+               original_price,
+               discount_price,
+               car_package,
+               info,
+               create_time,
+               service_catalog,
+               audit_status,
+               sale_status,
+               version
+        from bus_service_item
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="carPackage != null">
+                and car_package = #{carPackage}
+            </if>
+            <if test="serviceCatalog != null">
+                and service_catalog = #{serviceCatalog}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.car.business.mapper.StatementMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.car.business.domain.Statement">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
+        <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR"/>
+        <result column="actual_arrival_time" property="actualArrivalTime" jdbcType="TIMESTAMP"/>
+        <result column="license_plate" property="licensePlate" jdbcType="VARCHAR"/>
+        <result column="car_series" property="carSeries" jdbcType="VARCHAR"/>
+        <result column="service_type" property="serviceType" jdbcType="BIGINT"/>
+        <result column="appointment_id" property="appointmentId" jdbcType="BIGINT"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+        <result column="payee_id" property="payeeId" jdbcType="BIGINT"/>
+        <result column="total_amount" property="totalAmount" jdbcType="DECIMAL"/>
+        <result column="total_quantity" property="totalQuantity" jdbcType="DECIMAL"/>
+        <result column="discount_amount" property="discountAmount" jdbcType="DECIMAL"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from bus_statement
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.car.business.domain.Statement" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into bus_statement (customer_name, customer_phone, actual_arrival_time,
+                                   license_plate, car_series, service_type,
+                                   appointment_id, status, info)
+        values (#{customerName,jdbcType=VARCHAR},
+                #{customerPhone,jdbcType=VARCHAR},
+                #{actualArrivalTime,jdbcType=TIMESTAMP},
+                #{licensePlate,jdbcType=VARCHAR},
+                #{carSeries,jdbcType=VARCHAR},
+                #{serviceType,jdbcType=BIGINT},
+                #{appointmentId,jdbcType=BIGINT},
+                #{status},
+                #{info,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.car.business.domain.Statement">
+        update bus_statement
+        set customer_name       = #{customerName,jdbcType=VARCHAR},
+            customer_phone      = #{customerPhone,jdbcType=VARCHAR},
+            actual_arrival_time = #{actualArrivalTime,jdbcType=TIMESTAMP},
+            license_plate       = #{licensePlate,jdbcType=VARCHAR},
+            car_series          = #{carSeries,jdbcType=VARCHAR},
+            service_type        = #{serviceType,jdbcType=BIGINT},
+            info                = #{info,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select id,
+               customer_name,
+               customer_phone,
+               actual_arrival_time,
+               license_plate,
+               car_series,
+               service_type,
+               appointment_id,
+               status,
+               pay_time,
+               payee_id,
+               total_amount,
+               total_quantity,
+               discount_amount,
+               create_time,
+               info
+        from bus_statement
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id,
+               customer_name,
+               customer_phone,
+               actual_arrival_time,
+               license_plate,
+               car_series,
+               service_type,
+               appointment_id,
+               status,
+               pay_time,
+               payee_id,
+               total_amount,
+               total_quantity,
+               discount_amount,
+               create_time,
+               info
+        from bus_statement
+    </select>
+    <select id="selectForList" resultMap="BaseResultMap">
+        select id,
+        customer_name,
+        customer_phone,
+        actual_arrival_time,
+        license_plate,
+        car_series,
+        service_type,
+        appointment_id,
+        status,
+        pay_time,
+        payee_id,
+        total_amount,
+        total_quantity,
+        discount_amount,
+        create_time,
+        info
+        from bus_statement
+        <where>
+            <if test="cmiName != null and cmiName != ''">
+                and customer_name like concat('%',#{cmiName},'%')
+            </if>
+            <if test="cmiPhone != null and cmiPhone != ''">
+                and customer_phone like concat('%',#{cmiPhone},'%')
+            </if>
+            <if test="cmiLicensePlate != null and cmiLicensePlate != ''">
+                and license_plate like concat('%',#{cmiLicensePlate},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByStatementId" resultMap="BaseResultMap">
+        select id,
+               customer_name,
+               customer_phone,
+               actual_arrival_time,
+               license_plate,
+               car_series,
+               service_type,
+               appointment_id,
+               status,
+               pay_time,
+               payee_id,
+               total_amount,
+               total_quantity,
+               discount_amount,
+               create_time,
+               info
+        from bus_statement
+        where id = #{statementId}
+    </select>
+
+
+
+    <update id="updateAmount">
+        update bus_statement
+        set total_amount    = #{totalAmount},
+            total_quantity  = #{totalCount},
+            discount_amount = #{itemPrice}
+        where id = #{statementId}
+    </update>
+
+    <update id="updatePayStatement">
+        update bus_statement
+        set pay_time = #{payTime},
+            payee_id = #{payeeId},
+            status = #{status}
+        where id = #{id}
+    </update>
+
+    <select id="selectByAppointmentId" resultMap="BaseResultMap">
+        select id,
+               customer_name,
+               customer_phone,
+               actual_arrival_time,
+               license_plate,
+               car_series,
+               service_type,
+               appointment_id,
+               status,
+               pay_time,
+               payee_id,
+               total_amount,
+               total_quantity,
+               discount_amount,
+               create_time,
+               info
+        from bus_statement
+        where appointment_id = #{id}
+    </select>
+</mapper>

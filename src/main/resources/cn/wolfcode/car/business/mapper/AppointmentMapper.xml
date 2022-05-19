@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.car.business.mapper.AppointmentMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.car.business.domain.Appointment">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
+        <result column="customer_phone" property="customerPhone" jdbcType="BIGINT"/>
+        <result column="appointment_time" property="appointmentTime" jdbcType="TIMESTAMP"/>
+        <result column="actual_arrival_time" property="actualArrivalTime" jdbcType="TIMESTAMP"/>
+        <result column="license_plate" property="licensePlate" jdbcType="VARCHAR"/>
+        <result column="car_series" property="carSeries" jdbcType="VARCHAR"/>
+        <result column="service_type" property="serviceType" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from bus_appointment
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.car.business.domain.Appointment" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into bus_appointment (customer_name, customer_phone, appointment_time,
+                                     license_plate, car_series,
+                                     service_type, create_time, info,
+                                     status)
+        values (#{customerName,jdbcType=VARCHAR}, #{customerPhone,jdbcType=BIGINT},
+                #{appointmentTime,jdbcType=TIMESTAMP},
+                #{licensePlate,jdbcType=VARCHAR},
+                #{carSeries,jdbcType=VARCHAR},
+                #{serviceType,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP},
+                #{info,jdbcType=VARCHAR},
+                #{status,jdbcType=INTEGER})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.car.business.domain.Appointment">
+        update bus_appointment
+        set customer_name       = #{customerName,jdbcType=VARCHAR},
+            customer_phone      = #{customerPhone,jdbcType=BIGINT},
+            appointment_time    = #{appointmentTime,jdbcType=TIMESTAMP},
+            license_plate       = #{licensePlate,jdbcType=VARCHAR},
+            car_series          = #{carSeries,jdbcType=VARCHAR},
+            service_type        = #{serviceType,jdbcType=INTEGER},
+            info                = #{info,jdbcType=VARCHAR},
+            status              = #{status,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select id,
+               customer_name,
+               customer_phone,
+               appointment_time,
+               actual_arrival_time,
+               license_plate,
+               car_series,
+               service_type,
+               create_time,
+               info,
+               status
+        from bus_appointment
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id,
+               customer_name,
+               customer_phone,
+               appointment_time,
+               actual_arrival_time,
+               license_plate,
+               car_series,
+               service_type,
+               create_time,
+               info,
+               status
+        from bus_appointment
+    </select>
+
+    <select id="selectForList" resultMap="BaseResultMap">
+        select id,
+        customer_name,
+        customer_phone,
+        appointment_time,
+        actual_arrival_time,
+        license_plate,
+        car_series,
+        service_type,
+        create_time,
+        info,
+        status
+        from bus_appointment
+        <where>
+            <if test="cmiName != null and cmiName != ''">
+                and customer_name like concat('%',#{cmiName},'%')
+            </if>
+            <if test="cmiPhone != null and cmiPhone != ''">
+                and customer_phone like concat('%',#{cmiPhone},'%')
+            </if>
+            <if test="cmiStatus != null">
+                and status = #{cmiStatus}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateByCancelId">
+        update bus_appointment
+        set status = #{statusCancel}
+        where id = #{id}
+    </update>
+
+    <update id="updateByArrival">
+        update bus_appointment
+        set status = #{statusArrival},actual_arrival_time = #{arrivalDate}
+        where id = #{arrival}
+    </update>
+
+    <update id="changeStatus">
+        update bus_appointment
+        set status = #{statusSettle}
+        where id = #{id}
+    </update>
+</mapper>

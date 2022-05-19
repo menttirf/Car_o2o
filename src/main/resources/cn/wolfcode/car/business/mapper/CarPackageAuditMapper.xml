@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.car.business.mapper.CarPackageAuditMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.car.business.domain.CarPackageAudit">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="service_item_id" property="serviceItemId" jdbcType="BIGINT"/>
+        <result column="service_item_info" property="serviceItemInfo" jdbcType="VARCHAR"/>
+        <result column="service_item_price" property="serviceItemPrice" jdbcType="DECIMAL"/>
+        <result column="instance_id" property="instanceId" jdbcType="VARCHAR"/>
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="audit_record" property="auditRecord" jdbcType="VARCHAR"/>
+        <result column="auditor_id" property="auditorId" jdbcType="BIGINT"/>
+        <result column="bpmn_info_id" property="bpmnInfoId" jdbcType="BIGINT"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+
+        <result column="service_item_name" property="serviceItem.name"/>
+        <result column="auditor_userName" property="auditor.userName"/>
+
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from bus_car_package_audit
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.car.business.domain.CarPackageAudit" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into bus_car_package_audit (service_item_id, service_item_info, service_item_price,
+                                           instance_id, creator, audit_record,
+                                           auditor_id, bpmn_info_id, info,
+                                           status, audit_time, create_time)
+        values (#{serviceItemId,jdbcType=BIGINT}, #{serviceItemInfo,jdbcType=VARCHAR},
+                #{serviceItemPrice,jdbcType=DECIMAL},
+                #{instanceId,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}, #{auditRecord,jdbcType=VARCHAR},
+                #{auditorId,jdbcType=BIGINT}, #{bpmnInfoId,jdbcType=BIGINT}, #{info,jdbcType=VARCHAR},
+                #{status,jdbcType=INTEGER}, #{auditTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="saveStartAudit"  useGeneratedKeys="true" keyProperty="id">
+        insert into bus_car_package_audit (service_item_id, service_item_info, service_item_price,
+                                           creator, auditor_id, bpmn_info_id, info, create_time,status)
+        values (#{serviceItemId,jdbcType=BIGINT}, #{serviceItemInfo,jdbcType=VARCHAR},
+                #{serviceItemPrice,jdbcType=DECIMAL},
+                #{creator,jdbcType=VARCHAR},
+                #{auditorId,jdbcType=BIGINT}, #{bpmnInfoId,jdbcType=BIGINT}, #{info,jdbcType=VARCHAR},
+                #{createTime,jdbcType=TIMESTAMP},#{status})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.car.business.domain.CarPackageAudit">
+        update bus_car_package_audit
+        set service_item_id    = #{serviceItemId,jdbcType=BIGINT},
+            service_item_info  = #{serviceItemInfo,jdbcType=VARCHAR},
+            service_item_price = #{serviceItemPrice,jdbcType=DECIMAL},
+            instance_id        = #{instanceId,jdbcType=VARCHAR},
+            creator            = #{creator,jdbcType=VARCHAR},
+            audit_record       = #{auditRecord,jdbcType=VARCHAR},
+            auditor_id         = #{auditorId,jdbcType=BIGINT},
+            bpmn_info_id       = #{bpmnInfoId,jdbcType=BIGINT},
+            info               = #{info,jdbcType=VARCHAR},
+            status             = #{status,jdbcType=INTEGER},
+            audit_time         = #{auditTime,jdbcType=TIMESTAMP},
+            create_time        = #{createTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateStartAudit">
+        update  bus_car_package_audit set instance_id = #{instanceId} where id = #{id}
+    </update>
+    <update id="updateByAuditStatus">
+        update  bus_car_package_audit set status = #{statusCancel} where id = #{id}
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select id,
+               service_item_id,
+               service_item_info,
+               service_item_price,
+               instance_id,
+               creator,
+               audit_record,
+               auditor_id,
+               bpmn_info_id,
+               info,
+               status,
+               audit_time,
+               create_time
+        from bus_car_package_audit
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id,
+               service_item_id,
+               service_item_info,
+               service_item_price,
+               instance_id,
+               creator,
+               audit_record,
+               auditor_id,
+               bpmn_info_id,
+               info,
+               status,
+               audit_time,
+               create_time
+        from bus_car_package_audit
+    </select>
+
+    <select id="selectForList" resultMap="BaseResultMap">
+        select  cpa.id,
+        si.`name` service_item_name,
+        cpa.service_item_info,
+        cpa.service_item_price,
+        cpa.instance_id,
+        cpa.creator,
+        cpa.audit_record,
+        su.user_name auditor_userName,
+        cpa.bpmn_info_id,
+        cpa.info,
+        cpa.auditor_id,
+        cpa.status,
+        cpa.audit_time,
+        cpa.create_time
+        from bus_car_package_audit cpa
+        left join bus_service_item si
+        on cpa.service_item_id = si.id
+        left join sys_user su
+        on cpa.auditor_id = su.id
+        <where>
+            <if test="beginTime != null">
+                and cpa.create_time >= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(cpa.create_time,'%Y-%m-%d')
+            </if>
+            <if test="auditorId != null">
+                and cpa.auditor_id = #{auditorId}
+            </if>
+            <if test="status != null">
+                and cpa.status = #{status}
+            </if>
+            <if test="info != null">
+                and cpa.info = #{info}
+            </if>
+        </where>
+    </select>
+</mapper>

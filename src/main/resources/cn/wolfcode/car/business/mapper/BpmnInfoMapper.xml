@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.car.business.mapper.BpmnInfoMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.car.business.domain.BpmnInfo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="bpmn_name" property="bpmnName" jdbcType="VARCHAR"/>
+        <result column="bpmn_type" property="bpmnType" jdbcType="VARCHAR"/>
+        <result column="bpmn_path" property="bpmnPath" jdbcType="VARCHAR"/>
+        <result column="deployment_id" property="deploymentId" jdbcType="VARCHAR"/>
+        <result column="act_process_id" property="actProcessId" jdbcType="VARCHAR"/>
+        <result column="act_process_key" property="actProcessKey" jdbcType="VARCHAR"/>
+        <result column="deploy_time" property="deployTime" jdbcType="TIMESTAMP"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from bus_bpmn_info
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.car.business.domain.BpmnInfo" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into bus_bpmn_info (bpmn_name, bpmn_type, bpmn_path,
+                                   deployment_id, act_process_id, act_process_key,
+                                   deploy_time, info)
+        values (#{bpmnName,jdbcType=VARCHAR}, #{bpmnType,jdbcType=VARCHAR}, #{bpmnPath,jdbcType=VARCHAR},
+                #{deploymentId,jdbcType=VARCHAR}, #{actProcessId,jdbcType=VARCHAR}, #{actProcessKey,jdbcType=VARCHAR},
+                #{deployTime,jdbcType=TIMESTAMP}, #{info,jdbcType=VARCHAR})
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.car.business.domain.BpmnInfo">
+        update bus_bpmn_info
+        set bpmn_name       = #{bpmnName,jdbcType=VARCHAR},
+            bpmn_type       = #{bpmnType,jdbcType=VARCHAR},
+            bpmn_path       = #{bpmnPath,jdbcType=VARCHAR},
+            deployment_id   = #{deploymentId,jdbcType=VARCHAR},
+            act_process_id  = #{actProcessId,jdbcType=VARCHAR},
+            act_process_key = #{actProcessKey,jdbcType=VARCHAR},
+            deploy_time     = #{deployTime,jdbcType=TIMESTAMP},
+            info            = #{info,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateEditPage">
+        update bus_bpmn_info
+        set info = #{info,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select id,
+               bpmn_name,
+               bpmn_type,
+               bpmn_path,
+               deployment_id,
+               act_process_id,
+               act_process_key,
+               deploy_time,
+               info
+        from bus_bpmn_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id,
+               bpmn_name,
+               bpmn_type,
+               bpmn_path,
+               deployment_id,
+               act_process_id,
+               act_process_key,
+               deploy_time,
+               info
+        from bus_bpmn_info
+    </select>
+
+    <select id="selectForList" resultMap="BaseResultMap">
+        select id,
+        bpmn_name,
+        bpmn_type,
+        bpmn_path,
+        deployment_id,
+        act_process_id,
+        act_process_key,
+        deploy_time,
+        info
+        from bus_bpmn_info
+        <where>
+            <if test="beginTime != null">
+                and deploy_time >= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(deploy_time,'%Y-%m-%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByBpmnType" resultMap="BaseResultMap">
+        select id,
+               bpmn_name,
+               bpmn_type,
+               bpmn_path,
+               deployment_id,
+               act_process_id,
+               act_process_key,
+               deploy_time,
+               info
+        from bus_bpmn_info
+        where bpmn_type = #{carPackage}
+    </select>
+
+</mapper>

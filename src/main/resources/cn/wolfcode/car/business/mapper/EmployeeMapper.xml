@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wolfcode.car.business.mapper.EmployeeMapper">
+    <resultMap id="BaseResultMap" type="cn.wolfcode.car.business.domain.Employee">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="admin" property="admin" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="hiredate" property="hiredate" jdbcType="TIMESTAMP"/>
+
+        <result column="dept_id" property="department.id"/>
+        <result column="dept_name" property="department.name"/>
+        <result column="dept_sn" property="department.sn"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from employee
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <delete id="delete">
+        delete from employee where id = #{id}
+    </delete>
+    <insert id="insert" parameterType="cn.wolfcode.car.business.domain.Employee" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into employee (name, email, age,
+                              admin, status, dept_id,
+                              hiredate)
+        values (#{name,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER},
+                #{admin,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{department.id,jdbcType=BIGINT},
+                #{hiredate,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="addSave">
+        update employee
+        set name = #{name},email=#{email},age=#{age},admin=#{admin},status=#{status},dept_id=#{department.id}.hiredate=#{hiredate}
+        where id =#{id}
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="cn.wolfcode.car.business.domain.Employee">
+        update employee
+        set name     = #{name,jdbcType=VARCHAR},
+            email    = #{email,jdbcType=VARCHAR},
+            age      = #{age,jdbcType=INTEGER},
+            admin    = #{admin,jdbcType=INTEGER},
+            status   = #{status,jdbcType=INTEGER},
+            dept_id  = #{department.id,jdbcType=BIGINT},
+            hiredate = #{hiredate,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select e.id,
+               e.name,
+               e.email,
+               e.age,
+               e.admin,
+               e.status,
+               e.dept_id,
+               e.hiredate,
+               d.id dept_id,
+               d.name dept_name,
+               d.sn dept_sn
+        from employee e
+                 left join department d
+                           on e.dept_id = d.id
+        where e.id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id,
+               name,
+               email,
+               age,
+               admin,
+               status,
+               dept_id,
+               hiredate
+        from employee
+    </select>
+
+    <select id="selectForList" resultMap="BaseResultMap">
+        select e.id,
+               e.name,
+               e.email,
+               e.age,
+               e.admin,
+               e.status,
+               e.dept_id,
+               e.hiredate,
+               d.id dept_id,
+               d.name dept_name,
+               d.sn dept_sn
+        from employee e
+        left join department d
+        on e.dept_id = d.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (e.name like concat('%',#{keyword},'%')) or (e.email like concat('%',#{keyword},'%'))
+            </if>
+            <if test="tube != null">
+                and e.admin = #{tube}
+            </if>
+            <if test="freeze != null">
+                and e.status = #{freeze}
+            </if>
+            <if test="dept != null">
+                and d.id = #{dept}
+            </if>
+            <if test="beginTime != null">
+                and  e.hiredate >= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT( e.hiredate,'%Y-%m-%d')
+            </if>
+        </where>
+    </select>
+</mapper>
